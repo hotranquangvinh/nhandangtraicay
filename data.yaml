@@ -1,0 +1,15 @@
+train: dataset/train/images
+val: dataset/valid/images
+test: dataset/test/images
+
+nc: 30
+
+names: ['Durian','Mulberries','Raspberry','Red pomegranate','apple','avocado','banana','blueberry','cantaloupe','carambola','cherry','coconut','grapefruit','grapes','green apple','green grapes','guava','kiwi','lemon','litchi','mango','orange','papaya','passion fruit','pear','pineapple','pitaya','strawberry','watermelon','peach']
+
+
+roboflow:
+  workspace: fruit-yo0ri
+  project: fruit-xrx4i
+  version: 1
+  license: Public Domain
+  url: https://universe.roboflow.com/fruit-yo0ri/fruit-xrx4i/dataset/1S

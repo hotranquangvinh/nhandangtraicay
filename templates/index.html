@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hệ Thống Nhận Dạng Trái Cây</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Serif:wght@600&display=swap');
+
+:root{
+    --bg:#f5efe6;
+    --bg-accent:#fff7ec;
+    --card:#fffdf8;
+    --ink:#1f2937;
+    --muted:#5f6b7a;
+    --line:#e6dac7;
+    --brand:#d96f32;
+    --brand-dark:#a84f21;
+    --leaf:#5c8b4a;
+    --shadow:0 22px 60px rgba(81, 48, 18, 0.12);
+}
+
+body{
+    margin:0;
+    font-family:"Be Vietnam Pro", sans-serif;
+    color:var(--ink);
+    background:
+        radial-gradient(circle at top left, rgba(255, 214, 153, 0.65), transparent 32%),
+        radial-gradient(circle at top right, rgba(166, 216, 122, 0.35), transparent 24%),
+        linear-gradient(180deg, #f9f4eb 0%, #f1ece5 100%);
+}
+
+.page{
+    max-width:1160px;
+    margin:0 auto;
+    padding:42px 20px 56px;
+}
+
+.webcam-shortcut{
+    position:fixed;
+    left:32px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    width:92px;
+    min-height:120px;
+    padding:16px 12px;
+    background:linear-gradient(135deg, #5c8b4a 0%, #76a95f 100%);
+    color:white;
+    text-decoration:none;
+    border-radius:26px;
+    box-shadow:0 18px 40px rgba(92, 139, 74, 0.28);
+}
+
+.webcam-shortcut:hover{
+    transform:translateY(-50%) translateX(2px);
+}
+
+.webcam-shortcut-label{
+    text-align:center;
+    font-size:14px;
+    font-weight:700;
+    line-height:1.35;
+}
+
+.page-header{
+    margin-bottom:26px;
+    text-align:center;
+}
+
+.page-header h1{
+    margin:0;
+}
+
+.hero{
+    display:grid;
+    grid-template-columns:0.95fr 1.05fr;
+    gap:28px;
+    align-items:start;
+}
+
+.hero-card,
+.info-panel,
+.info-card{
+    background:rgba(255, 253, 248, 0.92);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(230, 218, 199, 0.9);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+}
+
+.hero-card{
+    padding:34px;
+}
+
+h1{
+    font-family:"IBM Plex Serif", serif;
+    font-size:44px;
+    line-height:1.08;
+}
+
+.upload-form{
+    display:grid;
+    gap:14px;
+}
+
+.action-row{
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.file-input{
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#fff;
+    font-size:16px;
+}
+
+.submit-btn{
+    padding:15px 26px;
+    background:linear-gradient(135deg, var(--brand) 0%, #ea8e3f 100%);
+    color:white;
+    border:none;
+    border-radius:18px;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:0 14px 30px rgba(217, 111, 50, 0.24);
+}
+
+.secondary-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 16px;
+    background:linear-gradient(135deg, #5c8b4a 0%, #76a95f 100%);
+    color:white;
+    border:none;
+    border-radius:18px;
+    font-size:17px;
+    font-weight:700;
+    text-decoration:none;
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:0 14px 30px rgba(92, 139, 74, 0.24);
+}
+
+.camera-icon-box{
+    position:relative;
+    width:40px;
+    height:40px;
+    flex:0 0 40px;
+    border-radius:12px;
+    background:rgba(255, 255, 255, 0.18);
+    border:1px solid rgba(255, 255, 255, 0.32);
+}
+
+.camera-icon-box::before{
+    content:"";
+    position:absolute;
+    left:9px;
+    top:12px;
+    width:20px;
+    height:14px;
+    border:2px solid #fff;
+    border-radius:4px;
+}
+
+.camera-icon-box::after{
+    content:"";
+    position:absolute;
+    left:16px;
+    top:16px;
+    width:6px;
+    height:6px;
+    border:2px solid #fff;
+    border-radius:999px;
+}
+
+.camera-label{
+    display:block;
+    line-height:1.2;
+}
+
+.submit-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 18px 34px rgba(217, 111, 50, 0.3);
+}
+
+.secondary-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 18px 34px rgba(92, 139, 74, 0.3);
+}
+
+.info-panel{
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.info-panel .details{
+    margin-top:0;
+}
+
+.preview-box{
+    min-height:460px;
+    border:2px dashed #d5c2aa;
+    border-radius:24px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.85), rgba(249,241,229,0.95)),
+        repeating-linear-gradient(45deg, rgba(217,111,50,0.05) 0, rgba(217,111,50,0.05) 12px, rgba(255,255,255,0) 12px, rgba(255,255,255,0) 24px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.preview-box img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.placeholder{
+    max-width:280px;
+    text-align:center;
+}
+
+.placeholder strong{
+    display:block;
+    margin-bottom:10px;
+    font-size:24px;
+}
+
+.placeholder span{
+    color:var(--muted);
+    font-size:16px;
+    line-height:1.7;
+}
+
+.summary-card{
+    padding:18px 20px;
+    border-radius:22px;
+    background:linear-gradient(180deg, #fff7ea 0%, #fffefb 100%);
+    border:1px solid var(--line);
+}
+
+.summary-card h2,
+.details h2{
+    margin:0 0 16px;
+    font-size:28px;
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+    gap:12px;
+}
+
+.summary-note{
+    margin:0 0 14px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.6;
+}
+
+.summary-item{
+    padding:16px;
+    border-radius:18px;
+    background:var(--card);
+    border:1px solid var(--line);
+}
+
+.summary-item .fruit-name{
+    display:block;
+    margin-bottom:8px;
+    font-size:20px;
+    font-weight:700;
+}
+
+.summary-item .fruit-count{
+    display:block;
+    color:var(--brand-dark);
+    font-size:17px;
+    font-weight:600;
+}
+
+.summary-item .fruit-confidence,
+.summary-item .fruit-confidence-list{
+    display:block;
+    margin-top:8px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.6;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:18px;
+}
+
+.info-card{
+    padding:24px;
+}
+
+.info-card h3{
+    margin:0 0 8px;
+    font-size:28px;
+}
+
+.info-card .tag{
+    display:inline-block;
+    margin-bottom:16px;
+    padding:8px 12px;
+    border-radius:999px;
+    background:#edf7e8;
+    color:#3e6b2d;
+    font-size:14px;
+    font-weight:700;
+}
+
+.info-block{
+    margin-top:14px;
+}
+
+.info-block strong{
+    display:block;
+    margin-bottom:6px;
+    font-size:17px;
+}
+
+.info-block p,
+.info-block li{
+    color:var(--muted);
+    font-size:16px;
+    line-height:1.7;
+}
+
+.info-block ul{
+    margin:8px 0 0 18px;
+    padding:0;
+}
+
+@media (max-width: 980px){
+    .hero{
+        grid-template-columns:1fr;
+    }
+
+    h1{
+        font-size:36px;
+    }
+
+    .preview-box{
+        min-height:380px;
+    }
+}
+
+@media (max-width: 640px){
+    .page{
+        padding:24px 14px 40px;
+    }
+
+    .hero-card,
+    .info-panel,
+    .info-card{
+        border-radius:22px;
+    }
+
+    .hero-card{
+        padding:24px;
+    }
+
+    h1{
+        font-size:30px;
+    }
+
+    .file-input,
+    .secondary-btn,
+    .submit-btn,
+    .info-block p,
+    .info-block li{
+        font-size:15px;
+    }
+
+    .action-row{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .webcam-shortcut{
+        position:static;
+        transform:none;
+        width:auto;
+        min-height:auto;
+        margin:0 auto 18px;
+        border-radius:20px;
+    }
+
+    .webcam-shortcut:hover{
+        transform:none;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+<a class="webcam-shortcut" href="/webcam">
+    <span class="camera-icon-box" aria-hidden="true"></span>
+    <span class="webcam-shortcut-label">Nhận dạng bằng camera</span>
+</a>
+
+<div class="page">
+    <header class="page-header">
+        <h1>Hệ thống nhận dạng trái cây</h1>
+    </header>
+
+    <section class="hero">
+        <div class="hero-card">
+            <form class="upload-form" method="POST" enctype="multipart/form-data">
+                <input class="file-input" type="file" name="image" required>
+                <div class="action-row">
+                    <button class="submit-btn" type="submit">Nhận dạng ngay</button>
+                </div>
+            </form>
+
+            <div class="preview-box">
+                {% if image %}
+                <img src="{{image}}" alt="Kết quả nhận dạng trái cây">
+                {% else %}
+                <div class="placeholder">
+                    <strong>Ảnh kết quả sẽ hiển thị tại đây</strong>
+                    <span>Hãy chọn một ảnh có trái cây để hệ thống nhận dạng, đếm số lượng và hiển thị thông tin tham khảo.</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if counts %}
+            <div class="summary-card">
+                <h2>Kết quả nhận dạng</h2>
+                <p class="summary-note">Phần trăm bên dưới là độ tin cậy do mô hình nhận dạng trả về cho từng loại trái cây đã phát hiện.</p>
+                <div class="summary-grid">
+                    {% for item in detection_summary %}
+                    <div class="summary-item">
+                        <span class="fruit-name">{{item.ten}}</span>
+                        <span class="fruit-count">Số lượng: {{item.so_luong}}</span>
+                        {% if item.so_luong == 1 %}
+                        <span class="fruit-confidence">Độ tin cậy nhận dạng: {{item.do_tin_cay_cao_nhat}}%</span>
+                        {% else %}
+                        <span class="fruit-confidence">Độ tin cậy trung bình: {{item.do_tin_cay_trung_binh}}% | Cao nhất: {{item.do_tin_cay_cao_nhat}}%</span>
+                        <span class="fruit-confidence-list">Từng quả: {% for conf in item.cac_muc_tin_cay %}{{conf}}%{% if not loop.last %}, {% endif %}{% endfor %}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-panel">
+            {% if fruit_details %}
+            <section class="details">
+                <h2>Thông tin thêm</h2>
+                <div class="info-grid">
+                    {% for fruit in fruit_details %}
+                    <article class="info-card">
+                        <h3>{{fruit.ten}}</h3>
+                        <span class="tag">Đã phát hiện {{fruit.so_luong}} quả | Tin cậy cao nhất {{fruit.do_tin_cay_cao_nhat}}%</span>
+
+                        <div class="info-block">
+                            <strong>Dinh dưỡng nổi bật</strong>
+                            <p>{{fruit.dinh_duong}}</p>
+                        </div>
+
+                        <div class="info-block">
+                            <strong>Công dụng tham khảo</strong>
+                            <p>{{fruit.cong_dung}}</p>
+                        </div>
+
+                        <div class="info-block">
+                            <strong>Gợi ý món ăn và nước uống</strong>
+                            <ul>
+                                {% for item in fruit.goi_y %}
+                                <li>{{item}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

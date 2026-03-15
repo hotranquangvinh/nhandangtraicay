@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhận Dạng Trái Cây Bằng Webcam</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Serif:wght@600&display=swap');
+
+:root{
+    --bg:#f5efe6;
+    --card:#fffdf8;
+    --ink:#1f2937;
+    --muted:#5f6b7a;
+    --line:#e6dac7;
+    --brand:#d96f32;
+    --leaf:#5c8b4a;
+    --shadow:0 22px 60px rgba(81, 48, 18, 0.12);
+}
+
+body{
+    margin:0;
+    font-family:"Be Vietnam Pro", sans-serif;
+    color:var(--ink);
+    background:
+        radial-gradient(circle at top left, rgba(255, 214, 153, 0.65), transparent 32%),
+        radial-gradient(circle at top right, rgba(166, 216, 122, 0.35), transparent 24%),
+        linear-gradient(180deg, #f9f4eb 0%, #f1ece5 100%);
+}
+
+.page{
+    max-width:1240px;
+    margin:0 auto;
+    padding:42px 20px 56px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    margin-bottom:22px;
+}
+
+.topbar h1{
+    margin:0;
+    font-family:"IBM Plex Serif", serif;
+    font-size:42px;
+    line-height:1.08;
+}
+
+.back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 18px;
+    border-radius:16px;
+    background:#fff8ef;
+    border:1px solid var(--line);
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:700;
+}
+
+.webcam-layout{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:24px;
+    align-items:start;
+}
+
+.panel,
+.result-card,
+.info-card{
+    background:rgba(255, 253, 248, 0.92);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(230, 218, 199, 0.9);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+}
+
+.panel{
+    padding:28px;
+}
+
+.controls{
+    display:flex;
+    gap:12px;
+    margin-bottom:16px;
+}
+
+.webcam-btn{
+    padding:14px 22px;
+    border:none;
+    border-radius:18px;
+    color:#fff;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.webcam-btn.start{
+    background:linear-gradient(135deg, var(--leaf) 0%, #76a95f 100%);
+}
+
+.webcam-btn.stop{
+    background:linear-gradient(135deg, var(--brand) 0%, #ea8e3f 100%);
+}
+
+.status{
+    margin:0 0 18px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.6;
+}
+
+.camera-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.camera-box,
+.result-card{
+    overflow:hidden;
+}
+
+.camera-box strong,
+.result-card strong{
+    display:block;
+    padding:16px 18px 0;
+    font-size:22px;
+}
+
+.camera-box span,
+.result-card span{
+    display:block;
+    padding:6px 18px 16px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+}
+
+.camera-view,
+.result-image{
+    width:100%;
+    min-height:360px;
+    border-top:1px solid var(--line);
+    background:#fbf8f3;
+    object-fit:contain;
+}
+
+.result-empty{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.7;
+    text-align:center;
+}
+
+.sidebar{
+    display:grid;
+    gap:18px;
+}
+
+.summary-list,
+.info-list{
+    display:grid;
+    gap:12px;
+}
+
+.summary-item,
+.info-card{
+    padding:18px;
+}
+
+.summary-item{
+    border-radius:18px;
+    border:1px solid var(--line);
+    background:var(--card);
+}
+
+.summary-item strong,
+.info-card h3{
+    margin:0;
+    font-size:22px;
+}
+
+.summary-item span,
+.info-card p,
+.info-card li{
+    display:block;
+    margin-top:8px;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.7;
+}
+
+.tag{
+    display:inline-block;
+    margin-top:12px;
+    padding:8px 12px;
+    border-radius:999px;
+    background:#edf7e8;
+    color:#3e6b2d;
+    font-size:14px;
+    font-weight:700;
+}
+
+.info-card ul{
+    margin:8px 0 0 18px;
+    padding:0;
+}
+
+@media (max-width: 980px){
+    .webcam-layout,
+    .camera-grid{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+
+@media (max-width: 640px){
+    .page{
+        padding:24px 14px 40px;
+    }
+
+    .topbar h1{
+        font-size:32px;
+    }
+
+    .controls{
+        flex-direction:column;
+    }
+
+    .panel,
+    .result-card,
+    .info-card{
+        border-radius:22px;
+    }
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+    <div class="topbar">
+        <h1>Nhận dạng trái cây bằng webcam</h1>
+        <a class="back-link" href="/">Quay lại trang chính</a>
+    </div>
+
+    <section class="webcam-layout">
+        <div class="panel">
+            <div class="controls">
+                <button class="webcam-btn start" id="start-webcam" type="button">Bật webcam</button>
+                <button class="webcam-btn stop" id="stop-webcam" type="button">Tắt webcam</button>
+            </div>
+
+            <p class="status" id="webcam-status">Webcam đang tắt. Bấm Bật webcam để bắt đầu nhận dạng.</p>
+
+            <div class="camera-grid">
+                <div class="camera-box result-card">
+                    <strong>Camera trực tiếp</strong>
+                    <span>Đưa trái cây vào giữa khung hình và giữ ổn định trong vài giây.</span>
+                    <video class="camera-view" id="webcam-video" autoplay playsinline muted></video>
+                </div>
+
+                <div class="result-card">
+                    <strong>Kết quả nhận dạng</strong>
+                    <span>Ảnh đã vẽ khung nhận dạng từ webcam sẽ hiện tại đây.</span>
+                    <img class="result-image" id="webcam-result-image" alt="Kết quả webcam" hidden>
+                    <div class="result-image result-empty" id="webcam-empty">Ảnh nhận dạng từ webcam sẽ hiện ở đây khi camera đang bật.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="result-card" style="padding: 20px;">
+                <strong style="padding:0;">Kết quả hiện tại</strong>
+                <span style="padding:6px 0 16px;">Phần trăm là độ tin cậy nhận dạng do mô hình trả về cho từng trái cây trong khung hình webcam.</span>
+                <div class="summary-list" id="webcam-summary">
+                    <div class="summary-item">
+                        <strong>Chưa phát hiện trái cây</strong>
+                        <span>Hệ thống sẽ cập nhật tự động sau khi webcam bật và có vật thể phù hợp.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-card" style="padding: 20px;">
+                <strong style="padding:0;">Thông tin thêm</strong>
+                <span style="padding:6px 0 16px;">Thông tin dinh dưỡng và gợi ý sẽ thay đổi theo trái cây vừa nhận dạng.</span>
+                <div class="info-list" id="webcam-info">
+                    <div class="info-card">
+                        <h3>Chưa có dữ liệu</h3>
+                        <p>Thông tin sẽ xuất hiện khi webcam nhận dạng được trái cây.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+const startButton = document.getElementById("start-webcam");
+const stopButton = document.getElementById("stop-webcam");
+const webcamVideo = document.getElementById("webcam-video");
+const webcamStatus = document.getElementById("webcam-status");
+const webcamResultImage = document.getElementById("webcam-result-image");
+const webcamEmpty = document.getElementById("webcam-empty");
+const webcamSummary = document.getElementById("webcam-summary");
+const webcamInfo = document.getElementById("webcam-info");
+
+let webcamStream = null;
+let webcamLoop = null;
+let webcamBusy = false;
+const webcamCanvas = document.createElement("canvas");
+
+function resetWebcamOutput() {
+    webcamResultImage.hidden = true;
+    webcamResultImage.removeAttribute("src");
+    webcamEmpty.hidden = false;
+    renderSummary([]);
+    renderInfo([]);
+}
+
+function renderSummary(detectionSummary) {
+    webcamSummary.innerHTML = "";
+
+    if (!detectionSummary || detectionSummary.length === 0) {
+        webcamSummary.innerHTML = '<div class="summary-item"><strong>Chưa phát hiện trái cây</strong><span>Hãy đưa trái cây vào khung hình và giữ ổn định trong vài giây.</span></div>';
+        return;
+    }
+
+    detectionSummary.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "summary-item";
+
+        const confidenceText = item.so_luong === 1
+            ? `Độ tin cậy: ${item.do_tin_cay_cao_nhat}%`
+            : `Trung bình: ${item.do_tin_cay_trung_binh}% | Cao nhất: ${item.do_tin_cay_cao_nhat}%`;
+
+        const detailText = item.so_luong === 1
+            ? `Số lượng: ${item.so_luong}`
+            : `Số lượng: ${item.so_luong} | Từng quả: ${item.cac_muc_tin_cay.map((conf) => `${conf}%`).join(", ")}`;
+
+        card.innerHTML = `<strong>${item.ten}</strong><span>${detailText}</span><span>${confidenceText}</span>`;
+        webcamSummary.appendChild(card);
+    });
+}
+
+function renderInfo(fruitDetails) {
+    webcamInfo.innerHTML = "";
+
+    if (!fruitDetails || fruitDetails.length === 0) {
+        webcamInfo.innerHTML = '<div class="info-card"><h3>Chưa có dữ liệu</h3><p>Thông tin sẽ xuất hiện khi webcam nhận dạng được trái cây.</p></div>';
+        return;
+    }
+
+    fruitDetails.forEach((fruit) => {
+        const card = document.createElement("div");
+        card.className = "info-card";
+        card.innerHTML = `
+            <h3>${fruit.ten}</h3>
+            <span class="tag">Đã phát hiện ${fruit.so_luong} quả | Tin cậy cao nhất ${fruit.do_tin_cay_cao_nhat}%</span>
+            <p><strong>Dinh dưỡng nổi bật</strong><br>${fruit.dinh_duong}</p>
+            <p><strong>Công dụng tham khảo</strong><br>${fruit.cong_dung}</p>
+            <p><strong>Gợi ý món ăn và nước uống</strong></p>
+            <ul>${fruit.goi_y.map((item) => `<li>${item}</li>`).join("")}</ul>
+        `;
+        webcamInfo.appendChild(card);
+    });
+}
+
+async function detectWebcamFrame() {
+    if (!webcamStream || webcamBusy || webcamVideo.readyState < 2) {
+        return;
+    }
+
+    webcamBusy = true;
+
+    try {
+        webcamCanvas.width = webcamVideo.videoWidth;
+        webcamCanvas.height = webcamVideo.videoHeight;
+
+        const context = webcamCanvas.getContext("2d");
+        context.drawImage(webcamVideo, 0, 0, webcamCanvas.width, webcamCanvas.height);
+
+        const blob = await new Promise((resolve) => webcamCanvas.toBlob(resolve, "image/jpeg", 0.85));
+        const formData = new FormData();
+        formData.append("frame", blob, "webcam.jpg");
+
+        const response = await fetch("/webcam-detect", {
+            method: "POST",
+            body: formData,
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Khong the nhan dang tu webcam.");
+        }
+
+        webcamResultImage.src = data.image;
+        webcamResultImage.hidden = false;
+        webcamEmpty.hidden = true;
+        webcamStatus.textContent = "Webcam đang hoạt động. Kết quả nhận dạng đang được cập nhật.";
+        renderSummary(data.detection_summary);
+        renderInfo(data.fruit_details);
+    } catch (error) {
+        webcamStatus.textContent = error.message;
+    } finally {
+        webcamBusy = false;
+    }
+}
+
+async function startWebcam() {
+    try {
+        webcamStatus.textContent = "Đang mở webcam...";
+        webcamStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: "environment",
+            },
+            audio: false,
+        });
+
+        webcamVideo.srcObject = webcamStream;
+        await webcamVideo.play();
+
+        webcamStatus.textContent = "Webcam đã bật. Hệ thống đang nhận dạng trực tiếp.";
+
+        await detectWebcamFrame();
+        webcamLoop = window.setInterval(detectWebcamFrame, 1400);
+    } catch (error) {
+        webcamStatus.textContent = "Khong mo duoc webcam. Kiem tra quyen truy cap camera trong trinh duyet.";
+    }
+}
+
+function stopWebcam() {
+    if (webcamLoop) {
+        window.clearInterval(webcamLoop);
+        webcamLoop = null;
+    }
+
+    if (webcamStream) {
+        webcamStream.getTracks().forEach((track) => track.stop());
+        webcamStream = null;
+    }
+
+    webcamVideo.srcObject = null;
+    webcamBusy = false;
+    webcamStatus.textContent = "Webcam đang tắt. Bấm Bật webcam để bắt đầu nhận dạng.";
+    resetWebcamOutput();
+}
+
+startButton.addEventListener("click", async () => {
+    if (!webcamStream) {
+        await startWebcam();
+    }
+});
+
+stopButton.addEventListener("click", () => {
+    stopWebcam();
+});
+
+window.addEventListener("beforeunload", () => {
+    stopWebcam();
+});
+</script>
+</body>
+</html>
