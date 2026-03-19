@@ -7,6 +7,7 @@ sdk: docker
 app_port: 7860
 pinned: false
 ---
+link server Hệ thống nhận dạng trái cây bằng hình ảnh: https://vinhtvt1034-nhandangvademsoluongtraicay-space.hf.space/
 
 # He thong nhan dang va dem so luong trai cay (YOLOv8 + Flask)
 
@@ -268,3 +269,4 @@ Công dụng: rất nhẹ, chạy nhanh, phù hợp máy yếu, realtime webcam,
 yolov8s: s = small
 Công dụng: vẫn khá nhẹ nhưng mạnh hơn yolov8n, thường cho kết quả nhận diện tốt hơn.
 Đổi lại: nặng hơn, train lâu hơn, infer chậm hơn một chút, tốn VRAM/RAM hơn.
+
