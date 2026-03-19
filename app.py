@@ -4,10 +4,46 @@ import base64
 import cv2
 import numpy as np
 import os
+from pathlib import Path
 
 app = Flask(__name__)
 
-model = YOLO("runs/detect/train19/weights/best.pt")
+
+def resolve_model_path() -> str:
+    base_dir = Path(__file__).resolve().parent
+    env_model_path = os.environ.get("MODEL_PATH")
+
+    if env_model_path:
+        env_path = Path(env_model_path)
+        if not env_path.is_absolute():
+            env_path = base_dir / env_path
+        if env_path.exists():
+            return str(env_path)
+
+    candidate_paths = [
+        base_dir / "best.pt",
+        base_dir / "runs" / "detect" / "train19" / "weights" / "best.pt",
+    ]
+
+    for path in candidate_paths:
+        if path.exists():
+            return str(path)
+
+    # Optional fallback for debugging only.
+    if os.environ.get("ALLOW_BASE_MODEL", "0") == "1":
+        # Returning a known Ultralytics weight name allows auto-download when missing.
+        for path in [base_dir / "yolov8s.pt", base_dir / "yolov8n.pt"]:
+            if path.exists():
+                return str(path)
+        return "yolov8n.pt"
+
+    raise FileNotFoundError(
+        "Khong tim thay custom model. Hay dat best.pt o thu muc goc hoac "
+        "runs/detect/train19/weights/best.pt (hoac dat MODEL_PATH)."
+    )
+
+
+model = YOLO(resolve_model_path())
 
 FRUIT_LABELS_VI = {
     "durian": "sầu riêng",
@@ -370,4 +406,7 @@ def webcam_detect():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", "7860"))
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host=host, port=port, debug=debug)

@@ -29,6 +29,7 @@ dataset/**
 *.onnx
 *.engine
 *.tflite
+!best.pt
 
 # YOLO runs output
 runs/
@@ -46,3 +47,6 @@ desktop.ini
 
 # Logs
 *.log
+
+# Generated app output
+static/result.jpg

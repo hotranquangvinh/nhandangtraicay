@@ -1,3 +1,13 @@
+---
+title: Nhan Dang Va Dem So Luong Trai Cay
+emoji: 🍍
+colorFrom: yellow
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # He thong nhan dang va dem so luong trai cay (YOLOv8 + Flask)
 
 Du an xay dung he thong nhan dang trai cay tu anh hoac webcam, dong thoi dem so luong theo tung loai. He thong su dung YOLOv8 de phat hien doi tuong va Flask de trien khai giao dien web.
@@ -33,6 +43,35 @@ Du an xay dung he thong nhan dang trai cay tu anh hoac webcam, dong thoi dem so 
 - NumPy
 
 ## 4) Cai dat moi truong
+
+## 4.1) Chay nhanh bang Docker (khuyen nghi khi chia se GitHub)
+
+Chi can cai Docker Desktop (hoac Docker Engine + Docker Compose). Khong can cai Python, pip, hay thu vien trong may.
+
+### Cach 1 - Docker Compose (de nhat)
+
+```bash
+docker compose up --build
+```
+
+Mo trinh duyet tai:
+
+- `http://127.0.0.1:7860/` (upload anh)
+- `http://127.0.0.1:7860/webcam` (nhan dang webcam)
+
+### Cach 2 - Docker thuong
+
+```bash
+docker build -t fruit-detector .
+docker run --rm -p 7860:7860 --name fruit-detector fruit-detector
+```
+
+### Luu y model khi share repo
+
+- Uu tien dat file model `best.pt` o thu muc goc repo va commit len GitHub.
+- Hoac dat bien moi truong `MODEL_PATH` (xem `docker-compose.yml`).
+- Neu khong co custom model, app se fallback sang `yolov8n.pt` khi `ALLOW_BASE_MODEL=1`.
+- Voi file model lon, nen dung Git LFS de tranh gioi han dung luong tren GitHub.
 
 ### B1. Tao va kich hoat moi truong ao (khuyen nghi)
 
@@ -221,3 +260,11 @@ python webcam.py
 - peach - dao
 
 chạy: d:/nhandangvademsoluongtraicay/venv/Scripts/python.exe app.py
+
+yolov8n: n = nano
+Công dụng: rất nhẹ, chạy nhanh, phù hợp máy yếu, realtime webcam, demo nhanh.
+Đổi lại: độ chính xác thường thấp hơn các bản lớn hơn.
+
+yolov8s: s = small
+Công dụng: vẫn khá nhẹ nhưng mạnh hơn yolov8n, thường cho kết quả nhận diện tốt hơn.
+Đổi lại: nặng hơn, train lâu hơn, infer chậm hơn một chút, tốn VRAM/RAM hơn.

@@ -1,0 +1,32 @@
+# VCS
+.git
+.gitignore
+
+# Python cache / env
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime artifacts
+*.log
+static/result.jpg
+
+# Large training data and outputs not needed for web inference image
+dataset/
+runs/
