@@ -69,10 +69,19 @@ docker run --rm -p 7860:7860 --name fruit-detector fruit-detector
 
 ### Luu y model khi share repo
 
-- Uu tien dat file model `best.pt` o thu muc goc repo va commit len GitHub.
-- Hoac dat bien moi truong `MODEL_PATH` (xem `docker-compose.yml`).
-- Neu khong co custom model, app se fallback sang `yolov8n.pt` khi `ALLOW_BASE_MODEL=1`.
+- Docker dang cau hinh uu tien model trai cay: `MODEL_PATH=runs/detect/train19/weights/best.pt`.
+- Mac dinh `ALLOW_BASE_MODEL=0` de tranh nap nham model tong quat (COCO) gay nhan dang nguoi/vat.
+- `.dockerignore` da duoc cau hinh de van copy dung file `runs/detect/train19/weights/best.pt` vao image.
+- Neu bat buoc debug bang model co san, co the dat `ALLOW_BASE_MODEL=1` (khong khuyen nghi khi demo ket qua trai cay).
 - Voi file model lon, nen dung Git LFS de tranh gioi han dung luong tren GitHub.
+
+### Kiem tra nhanh truoc khi chay Docker
+
+Kiem tra file model co ton tai truoc khi chay Docker:
+
+```bash
+ls runs/detect/train19/weights/best.pt
+```
 
 ### B1. Tao va kich hoat moi truong ao (khuyen nghi)
 

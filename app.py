@@ -8,6 +8,50 @@ from pathlib import Path
 
 app = Flask(__name__)
 
+EXPECTED_FRUIT_CLASSES_EN = {
+    "durian",
+    "mulberries",
+    "raspberry",
+    "red pomegranate",
+    "apple",
+    "avocado",
+    "banana",
+    "blueberry",
+    "cantaloupe",
+    "carambola",
+    "cherry",
+    "coconut",
+    "grapefruit",
+    "grapes",
+    "green apple",
+    "green grapes",
+    "guava",
+    "kiwi",
+    "lemon",
+    "litchi",
+    "mango",
+    "orange",
+    "papaya",
+    "passion fruit",
+    "pear",
+    "pineapple",
+    "pitaya",
+    "peach",
+    "strawberry",
+    "watermelon",
+}
+
+COCO_NON_FRUIT_SENTINELS = {
+    "person",
+    "car",
+    "truck",
+    "bus",
+    "bicycle",
+    "motorcycle",
+    "cat",
+    "dog",
+}
+
 
 def resolve_model_path() -> str:
     base_dir = Path(__file__).resolve().parent
@@ -38,12 +82,55 @@ def resolve_model_path() -> str:
         return "yolov8n.pt"
 
     raise FileNotFoundError(
-        "Khong tim thay custom model. Hay dat best.pt o thu muc goc hoac "
-        "runs/detect/train19/weights/best.pt (hoac dat MODEL_PATH)."
+        "Khong tim thay custom model. Hay dat MODEL_PATH tro den model trai cay "
+        "(vi du: runs/detect/train19/weights/best.pt). Neu build Docker, can dam "
+        "bao .dockerignore khong loai file best.pt nay ra khoi build context."
     )
 
 
-model = YOLO(resolve_model_path())
+def validate_fruit_model(loaded_model) -> None:
+    names = getattr(loaded_model, "names", {})
+
+    if isinstance(names, dict):
+        raw_names = names.values()
+    elif isinstance(names, list):
+        raw_names = names
+    else:
+        raw_names = []
+
+    normalized_names = {str(name).strip().lower() for name in raw_names}
+    if not normalized_names:
+        raise ValueError("Model khong co danh sach class hop le (model.names rong).")
+
+    allow_base_model = os.environ.get("ALLOW_BASE_MODEL", "0") == "1"
+    verify_fruit_model = os.environ.get("VERIFY_FRUIT_MODEL", "1") == "1"
+
+    if not verify_fruit_model or allow_base_model:
+        return
+
+    fruit_overlap = normalized_names.intersection(EXPECTED_FRUIT_CLASSES_EN)
+    coco_overlap = normalized_names.intersection(COCO_NON_FRUIT_SENTINELS)
+
+    if coco_overlap:
+        raise ValueError(
+            "Dang nap nham model tong quat (COCO) thay vi model trai cay. "
+            f"Class nghi van: {sorted(coco_overlap)}. "
+            "Hay kiem tra MODEL_PATH va file best.pt trong Docker image."
+        )
+
+    if len(fruit_overlap) < 8:
+        raise ValueError(
+            "Model dang nap khong giong model trai cay cua du an "
+            f"(chi khop {len(fruit_overlap)} class trai cay). "
+            "Hay dung dung best.pt da train cua ban."
+        )
+
+
+resolved_model_path = resolve_model_path()
+model = YOLO(resolved_model_path)
+validate_fruit_model(model)
+print(f"[MODEL] Loaded: {resolved_model_path}", flush=True)
+print(f"[MODEL] Class count: {len(model.names)}", flush=True)
 
 FRUIT_LABELS_VI = {
     "durian": "sầu riêng",

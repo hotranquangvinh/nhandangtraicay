@@ -32,7 +32,14 @@ dataset/**
 !best.pt
 
 # YOLO runs output
-runs/
+runs/*
+!runs/detect/
+runs/detect/*
+!runs/detect/train19/
+runs/detect/train19/*
+!runs/detect/train19/weights/
+runs/detect/train19/weights/*
+!runs/detect/train19/weights/best.pt
 
 # OS
 .DS_Store

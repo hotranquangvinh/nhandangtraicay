@@ -8,7 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     HOST=0.0.0.0 \
     PORT=7860 \
     FLASK_DEBUG=0 \
-    ALLOW_BASE_MODEL=1
+    ALLOW_BASE_MODEL=0 \
+    VERIFY_FRUIT_MODEL=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \

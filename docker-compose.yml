@@ -10,7 +10,7 @@ services:
       HOST: 0.0.0.0
       PORT: 7860
       FLASK_DEBUG: 0
-      ALLOW_BASE_MODEL: 1
-      # Neu co model custom, bo comment dong duoi va doi dung ten file.
-      # MODEL_PATH: best.pt
+      ALLOW_BASE_MODEL: 0
+      VERIFY_FRUIT_MODEL: 1
+      MODEL_PATH: runs/detect/train19/weights/best.pt
     restart: unless-stopped

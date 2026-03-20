@@ -29,4 +29,15 @@ static/result.jpg
 
 # Large training data and outputs not needed for web inference image
 dataset/
-runs/
+runs/*
+!runs/detect/
+runs/detect/*
+!runs/detect/train19/
+runs/detect/train19/*
+!runs/detect/train19/weights/
+runs/detect/train19/weights/*
+!runs/detect/train19/weights/best.pt
+
+# Prevent accidental use of generic base models inside container
+yolov8n.pt
+yolov8s.pt
