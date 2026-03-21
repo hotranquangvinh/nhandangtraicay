@@ -1,13 +1,17 @@
----
-title: Nhan Dang Va Dem So Luong Trai Cay
-emoji: 🍍
-colorFrom: yellow
-colorTo: green
-sdk: docker
-app_port: 7860
-pinned: false
----
-link server Hệ thống nhận dạng trái cây bằng hình ảnh: https://vinhtvt1034-nhandangvademsoluongtraicay-space.hf.space/
+
+link server Hugging Hệ thống nhận dạng trái cây bằng hình ảnh: 
+https://vinhtvt1034-nhandangvademsoluongtraicay-space.hf.space/
+
+link repo github dự án:
+https://github.com/hotranquangvinh/nhandangtraicay
+
+hướng dẫn clone dự án về và chạy dự án bằng Docker bằng lệnh:
+1. git clone dự án về máy
+git clone https://github.com/hotranquangvinh/nhandangtraicay.git
+2. chuyển về thư mục dự án
+cd nhandangtraicay
+3. mở Docker và chạy lệnh bên dưới trong terminal visual code để chạy dự án
+docker compose up --build
 
 # He thong nhan dang va dem so luong trai cay (YOLOv8 + Flask)
 
