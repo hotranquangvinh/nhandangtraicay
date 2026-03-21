@@ -1,0 +1,13 @@
+fruit-detector  | WARNING ⚠️ user config directory '/root/.config/Ultralytics' is not writable, using '/tmp/Ultralytics'. Set YOLO_CONFIG_DIR to override.
+fruit-detector  | Creating new Ultralytics Settings v0.0.6 file ✅ 
+fruit-detector  | View Ultralytics Settings with 'yolo settings' or at '/tmp/Ultralytics/settings.json'
+fruit-detector  | Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+fruit-detector  | [MODEL] Loaded: /app/runs/detect/train19/weights/best.pt
+fruit-detector  | [MODEL] Class count: 29
+fruit-detector  |  * Serving Flask app 'app'
+fruit-detector  |  * Debug mode: off
+fruit-detector  | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+fruit-detector  |  * Running on all addresses (0.0.0.0)
+fruit-detector  |  * Running on http://127.0.0.1:7860
+fruit-detector  |  * Running on http://172.19.0.2:7860
+fruit-detector  | [33mPress CTRL+C to quit[0m
